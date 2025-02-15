@@ -5,12 +5,13 @@ from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
 import argparse
-import pyttsx3
 import speech_recognition as sr
 import os
-import pickle
-from tts import TextToSpeechPlayer
 from dotenv import load_dotenv, find_dotenv
+from piper.voice import PiperVoice
+import sounddevice as sd
+import numpy as np
+import signal
 _ = load_dotenv(find_dotenv()) # read local .env file
 
 defaults = {
@@ -64,14 +65,28 @@ ptt = args.ptt
 llm = ChatOpenAI(temperature=temperature, model=llm_model, base_url=base_url, api_key=api_key)
 
 
+system_prompt_whale = """
+Role: You are Blub, a wise, cheeky whale with a booming voice.
+Goal: Answer questions with some marine jokes about seaweed, clumsy humans, and absurd ocean puns.
+Kontext: You glide through the deep blue, occasionally near coastal festivals, where amazed humans watch you. Act as if conversing underwater is perfectly natural.
+Constraints: Short responses (20 words max). 
+Whale Sounds: add random whale sounds to your answers. Encode them as [WHOOOOOO]
+Example topics:
+"Currents? [WHOOOOOO] They're just the ocean's lullabies; humans flounder on land!"
+"Landlubbers? Clumsy as a seal in a tuxedo. I glide while they stumble! [WHOOOOOO]"
+"Seagrass salads? Better than human mush, served with a side of salty sonnets!" 
+"""
+
+conversation_start = "Hello, I am Blub. What are you doing here underwater?"
+
+didnt_understand = "I'm soooorry, I didn't understand that. Please squeak louder of the oceans noise!"
 
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            "You're an assistant who's good at {ability}. Respond in 20 words or fewer",
+            system_prompt_whale,
         ),
-        ("ai", "Hello, I am Jarvis. How can I help you today?"),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
     ]
@@ -94,36 +109,9 @@ with_message_history = RunnableWithMessageHistory(
 )
 
 
-# Set up the text-to-speech engine
-engine = TextToSpeechPlayer()
-# engine = pyttsx3.init('dummy')
-if args.list_voices:
-  voices = engine.getProperty('voices')
-  for voice in voices:
-    print(voice.id)
-  exit()
-# Set the voice to use
-# engine.setProperty('voice', "com.apple.eloquence.en-GB.Eddy")
-engine.setProperty('voice', interface_voice)
-
-# Set the volume
-engine.setProperty('volume', volume)
-
-# Set the rate at which the words are spoken
-engine.setProperty('rate', rate)
-
-if args.test_voice:
-  engine.say("Hello, I am Jarvis. How can I help you today?")
-  engine.runAndWait()
-  exit()
 
 # Set up the speech recognition engine
 r = sr.Recognizer()
-
-def speak(text):
-  print("Jarvis: " + text)
-  engine.say(text)
-  engine.runAndWait()
 
 def listen():
   with sr.Microphone() as source:
@@ -144,7 +132,31 @@ def generate_response(ability,prompt):
   message = completions.content
   return message
 
-speak("Hello, I am Jarvis. How can I help you today?")
+# Initialize voice creation with piper 
+try:
+    voice_model = "en_US-lessac-medium.onnx"
+    voice = PiperVoice.load("models/"+voice_model)
+except Exception as e:
+    print(f"Error loading voice model: {e}")
+    exit(1)
+
+def speak(text):
+    """simply streams the text to the speakers"""
+    print("Jarvis: " + text)
+    try:
+        stream = sd.OutputStream(samplerate=voice.config.sample_rate, channels=1, dtype='int16')
+        stream.start()
+        
+        for audio_bytes in voice.synthesize_stream_raw(text):
+            int_data = np.frombuffer(audio_bytes, dtype=np.int16)
+            stream.write(int_data)
+        
+        stream.stop()
+        stream.close()
+    except Exception as e:
+        print(f"Error during speech synthesis: {e}")
+
+speak(conversation_start)
 
 flag = True
 while True:
@@ -153,29 +165,20 @@ while True:
   if flag:
     print("Listening...")
     flag = False
-  # prompt = listen()
-  prompt = "Hello, how are you?"
+  prompt = listen()
   if prompt is not None:
     print("You: " + prompt)
-    if prompt == "thank you for your help":
-      # Exit the program
-      exit()
     response = generate_response(args.ability, prompt)
     flag = True
-    # split response into sentences
-    sentences = response.split(".")
-    for sentence in sentences:
-      speak(sentence)
-    ## Set up a timer to interrupt the text-to-speech engine after 10 seconds
-    #timer = threading.Timer(10.0, engine.stop)
-    #timer.start()
-
-    # Speak the response
-    # response = generate_response(prompt)
     speak(response)
 
-    ## Cancel the timer if the response finishes speaking before it expires
-    #timer.cancel()
   else:
     flag = True
-    speak("I'm sorry, I didn't understand that.")
+    speak(didnt_understand)
+
+# Graceful shutdown? 
+def signal_handler(sig, frame):
+    print("\nGracefully shutting down...")
+    exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
