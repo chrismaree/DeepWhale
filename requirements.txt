@@ -11,3 +11,10 @@ numpy
 transformers
 torch
 simpleaudio
+cffi==1.17.1
+onnxruntime==1.20.1
+piper_phonemize_cross==1.2.1
+piper-tts==1.2.0
+pycparser==2.22
+setuptools==75.6.0
+sounddevice==0.5.1
