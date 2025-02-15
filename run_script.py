@@ -12,17 +12,18 @@ from piper.voice import PiperVoice
 import sounddevice as sd
 import numpy as np
 import signal
+from characters import get_character
+
 _ = load_dotenv(find_dotenv()) # read local .env file
 
 defaults = {
     "api_key": os.getenv("OPENAI_API_KEY") ,
-    "model": "gpt-3.5-turbo",
+    "model": "gpt-4o",
     "temperature": 0.7,
     "voice": "com.apple.eloquence.en-US.Grandpa",
     "volume": 1.0,
     "rate": 200,
     "session_id": "abc123",
-    "ability": "Psychology",
     "base_url": "https://api.openai.com/v1",
 }
 
@@ -30,7 +31,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--list_voices", action="store_true", help="List the available voices for the text-to-speech engine")
 parser.add_argument("--test_voice", action="store_true", help="Test the text-to-speech engine")
 parser.add_argument("--ptt", action="store_true", help="Use push-to-talk mode")
-parser.add_argument("--ability", type=str, help="The ability of the assistant", default=defaults["ability"])
+parser.add_argument("--character", type=str, help="which character to use", default="gnome")
 parser.add_argument("--api_key", type=str, help="The OpenAI API key")
 parser.add_argument("--model", type=str, help="The OpenAI model to use", default=defaults["model"])
 parser.add_argument("--temperature", type=float, help="The temperature to use for the OpenAI model", default=defaults["temperature"])
@@ -62,30 +63,20 @@ session_id = args.session_id
 base_url = args.base_url
 ptt = args.ptt
 
+# set up stuff
 llm = ChatOpenAI(temperature=temperature, model=llm_model, base_url=base_url, api_key=api_key)
+character = get_character(args.character)
 
-
-system_prompt_whale = """
-Role: You are Blub, a wise, cheeky whale with a booming voice.
-Goal: Answer questions with some marine jokes about seaweed, clumsy humans, and absurd ocean puns.
-Kontext: You glide through the deep blue, occasionally near coastal festivals, where amazed humans watch you. Act as if conversing underwater is perfectly natural.
-Constraints: Short responses (20 words max). 
-Whale Sounds: add random whale sounds to your answers. Encode them as [WHOOOOOO]
-Example topics:
-"Currents? [WHOOOOOO] They're just the ocean's lullabies; humans flounder on land!"
-"Landlubbers? Clumsy as a seal in a tuxedo. I glide while they stumble! [WHOOOOOO]"
-"Seagrass salads? Better than human mush, served with a side of salty sonnets!" 
-"""
-
-conversation_start = "Hello, I am Blub. What are you doing here underwater?"
-
-didnt_understand = "I'm soooorry, I didn't understand that. Please squeak louder of the oceans noise!"
+# Define Prompts and interaction messages
+system_prompt = character.system_prompt
+conversation_start = character.greeting
+didnt_understand = character.error_message
 
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            system_prompt_whale,
+            system_prompt,
         ),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
@@ -108,8 +99,6 @@ with_message_history = RunnableWithMessageHistory(
     history_messages_key="history",
 )
 
-
-
 # Set up the speech recognition engine
 r = sr.Recognizer()
 
@@ -124,9 +113,9 @@ def listen():
     print("Error: " + str(e))
     return None
 
-def generate_response(ability,prompt):
+def generate_response(prompt):
   completions = with_message_history.invoke(
-    {"ability": ability, "input": prompt},
+    {"input": prompt},
     config={"configurable": {"session_id": session_id}},
     )
   message = completions.content
@@ -142,7 +131,7 @@ except Exception as e:
 
 def speak(text):
     """simply streams the text to the speakers"""
-    print("Jarvis: " + text)
+    print(f"{character.name}: " + text)
     try:
         stream = sd.OutputStream(samplerate=voice.config.sample_rate, channels=1, dtype='int16')
         stream.start()
@@ -168,7 +157,7 @@ while True:
   prompt = listen()
   if prompt is not None:
     print("You: " + prompt)
-    response = generate_response(args.ability, prompt)
+    response = generate_response(prompt)
     flag = True
     speak(response)
 
