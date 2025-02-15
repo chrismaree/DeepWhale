@@ -1,0 +1,13 @@
+langchain
+langchain-core
+langchain-community
+langchain-openai
+pyaudio
+py3-tts
+SpeechRecognition
+python-dotenv
+PyObjC==10.3.2
+numpy
+transformers
+torch
+simpleaudio
