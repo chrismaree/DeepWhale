@@ -35,11 +35,12 @@ parser.add_argument("--character", type=str, help="which character to use", defa
 parser.add_argument("--api_key", type=str, help="The OpenAI API key")
 parser.add_argument("--model", type=str, help="The OpenAI model to use", default=defaults["model"])
 parser.add_argument("--temperature", type=float, help="The temperature to use for the OpenAI model", default=defaults["temperature"])
-parser.add_argument("--voice", type=str, help="The voice to use for the text-to-speech engine", default=defaults["voice"])
+parser.add_argument("--voice", type=str, help="The voice to use for the text-to-speech engine", default="en_GB-alan-medium.onnx")
 parser.add_argument("--volume", type=float, help="The volume to use for the text-to-speech engine", default=defaults["volume"])
 parser.add_argument("--rate", type=int, help="The rate at which the words are spoken for the text-to-speech engine", default=defaults["rate"])
 parser.add_argument("--session_id", type=str, help="The session ID to use for the chat history", default=defaults["session_id"])
 parser.add_argument("--base_url", type=str, help="The base URL to use for the OpenAI API", default=defaults["base_url"])
+
 args = parser.parse_args()
 
 
@@ -86,6 +87,15 @@ prompt = ChatPromptTemplate.from_messages(
 runnable = prompt | llm
 store = {}
 
+# Initialize voice creation with piper 
+voice_model = args.voice
+try:
+    voice = PiperVoice.load("models/"+voice_model)
+except Exception as e:
+    print(f"Error loading voice model: {e}")
+    exit(1)
+
+
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
         store[session_id] = ChatMessageHistory()
@@ -120,14 +130,6 @@ def generate_response(prompt):
     )
   message = completions.content
   return message
-
-# Initialize voice creation with piper 
-try:
-    voice_model = "en_US-lessac-medium.onnx"
-    voice = PiperVoice.load("models/"+voice_model)
-except Exception as e:
-    print(f"Error loading voice model: {e}")
-    exit(1)
 
 def speak(text):
     """simply streams the text to the speakers"""
@@ -169,5 +171,12 @@ while True:
 def signal_handler(sig, frame):
     print("\nGracefully shutting down...")
     exit(0)
-
 signal.signal(signal.SIGINT, signal_handler)
+
+# After parsing args
+if args.list_voices:
+    print("Available voice models:")
+    for file in os.listdir("models"):
+        if file.endswith(".onnx"):
+            print(f"  {file}")
+    exit(0)
