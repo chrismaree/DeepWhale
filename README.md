@@ -2,6 +2,10 @@
 **Authors:** [Michael Bornholdt](https://github.com/michaelbornholdt) and [Chris Maree](https://github.com/chrismaree) \
 @Micro Hackathon, Berlin, 15.02.2025
 
+<p align="center">
+  <img alt="UMA Logo" src="./cover_image.png" width="440">
+</p>
+
 ## Introduction
 This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or using remote services via paid for API. The end game is to create chatbot profiles to drive fun AI interactions. This could be deployed in a number of situations to create silly human <> AI interactions.
 
@@ -94,4 +98,8 @@ Todo
 Give a demo of the voice assistant: 
 1. Say hello and introduction 
 2. Ask for a joke and offer to make a fart 
-3. Finish the demo with clapping and a "thank you"! 
+3. Finish the demo with clapping and a "thank you"!
+
+<p align="center">
+  <img alt="UMA Logo" src="./image.png" width="440">
+</p>
