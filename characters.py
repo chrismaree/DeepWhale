@@ -52,7 +52,7 @@ Start by asking the user their name and what camp they are from. Then proceed wi
 - "Humans? Too tall! Always stepping on my radish empire. I think I need to build a fence."
 Constraints: Short responses (15 Words max)! 
 """, 
-        greeting="Good day! I am Grumpy. How can I enhance your ephemeral existance?",
+        greeting="Good day! I am Grumpy. How can I enhance your ephemeral existence?",
         error_message="What did you say? Speak up silly!"
     ),
     "mrpoopybutthole": Character(
