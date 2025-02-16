@@ -14,11 +14,12 @@ import numpy as np
 import signal
 import whisper
 from characters import get_character
+from text_to_speech_player import TextToSpeechPlayer
 
 _ = load_dotenv(find_dotenv()) # read local .env file
 
 defaults = {
-    "api_key": os.getenv("OPENAI_API_KEY") ,
+    "api_key": os.getenv("OPENAI_API_KEY"),
     "model": "gpt-4o",
     "temperature": 0.7,
     "voice": "com.apple.eloquence.en-US.Grandpa",
@@ -26,6 +27,7 @@ defaults = {
     "rate": 200,
     "session_id": "abc123",
     "base_url": "https://api.openai.com/v1",
+    "tts": "elevenlabs",
 }
 
 parser = argparse.ArgumentParser()
@@ -41,6 +43,7 @@ parser.add_argument("--volume", type=float, help="The volume to use for the text
 parser.add_argument("--rate", type=int, help="The rate at which the words are spoken for the text-to-speech engine", default=defaults["rate"])
 parser.add_argument("--session_id", type=str, help="The session ID to use for the chat history", default=defaults["session_id"])
 parser.add_argument("--base_url", type=str, help="The base URL to use for the OpenAI API", default=defaults["base_url"])
+parser.add_argument("--tts", type=str, help="The text-to-speech backend to use", default=defaults["tts"])
 
 args = parser.parse_args()
 
@@ -96,6 +99,8 @@ except Exception as e:
     print(f"Error loading voice model: {e}")
     exit(1)
 
+# Initialize the TextToSpeechPlayer
+tts_player = TextToSpeechPlayer(backend=args.tts)
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
@@ -148,18 +153,10 @@ def generate_response(prompt):
   return message
 
 def speak(text):
-    """simply streams the text to the speakers"""
+    """Use TextToSpeechPlayer to stream the text to the speakers"""
     print(f"{character.name}: " + text)
     try:
-        stream = sd.OutputStream(samplerate=voice.config.sample_rate, channels=1, dtype='int16')
-        stream.start()
-        
-        for audio_bytes in voice.synthesize_stream_raw(text):
-            int_data = np.frombuffer(audio_bytes, dtype=np.int16)
-            stream.write(int_data)
-        
-        stream.stop()
-        stream.close()
+        tts_player.say(text)
     except Exception as e:
         print(f"Error during speech synthesis: {e}")
 
