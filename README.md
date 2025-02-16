@@ -41,7 +41,7 @@ Of the offline models, we found that piper was the best in speed and at creating
 [piper_example.webm](https://github.com/user-attachments/assets/ace6ddf8-0c3e-46ff-95c9-dbb4e2761228)
 
 Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result. Thats not that great. 
-[own_voice_example.webm](https://github.com/user-attachments/assets/d88175b6-bb3a-45cd-b146-9efd489cc2d2)
+[own.webm](https://github.com/user-attachments/assets/1dcea858-8398-4cb1-a02a-54c8f9af2f09)
 
 In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: 
 
