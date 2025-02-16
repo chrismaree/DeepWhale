@@ -59,6 +59,10 @@ Since it is impossible for current TTS models to create realistic sound effects 
 
 Functionally, this works by asking the LLM to include sound effects, as defined in the [sounds](./sounds) directory, within the LLM output. For example the LLM can say: _"Yes, I can make a fart sound [aggressive_fart]. Was that not a good one?"_. The logic will then extract the sound effect from the [sounds](./sounds) directory and play it as part of the playback of the speech to text flow.
 
+And its great at making sounds! check this demo sound out:
+
+[yawn.webm](https://github.com/user-attachments/assets/122f8967-3aeb-4f78-8a14-b06c059bc6f0)
+
 ## How to install
 
 Create a virtual environment with python 3.11 and install the dependencies:
