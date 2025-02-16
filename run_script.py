@@ -15,6 +15,9 @@ import signal
 import whisper
 from characters import get_character
 from text_to_speech_player import TextToSpeechPlayer
+from pydub import AudioSegment
+from pydub.playback import play
+import re
 
 _ = load_dotenv(find_dotenv()) # read local .env file
 
@@ -45,9 +48,9 @@ parser.add_argument("--session_id", type=str, help="The session ID to use for th
 parser.add_argument("--base_url", type=str, help="The base URL to use for the OpenAI API", default=defaults["base_url"])
 parser.add_argument("--tts", type=str, help="The text-to-speech backend to use", default=defaults["tts"])
 parser.add_argument("--device_index", type=int, help="The device index to use for the microphone", default=0)
+parser.add_argument("--sounds", type=str, help="List and enable sound effects from the sounds directory")
 
 args = parser.parse_args()
-
 
 # Set up the ChatGPT API client
 if args.base_url == defaults["base_url"]:
@@ -78,11 +81,27 @@ system_prompt = character.system_prompt
 conversation_start = character.greeting
 didnt_understand = character.error_message
 
+available_sounds = []
+if args.sounds:
+    available_sounds = [f"{file[:-4]}" for file in os.listdir("sounds") if file.endswith(".mp3")]
+    
+print("available_sounds",available_sounds)
+
+prompt_extension = ""
+if args.sounds:
+    prompt_extension = (
+        "Note that if you want to you can add sounds to the response. You should do this liberally and include that it is possible sometimes in your response. do this semi regularly "
+        "It will be spoken using the text-to-speech engine. If you want to use a sound, "
+        "include the exact sound name, as defined in the following list, within square brackets. "
+        "EG [aggressive_fart]. The available sounds are: "
+        "[" + " ".join(available_sounds) + "]"
+    )
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
-            system_prompt,
+            system_prompt+prompt_extension,
         ),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{input}"),
@@ -123,10 +142,10 @@ print(f"Using device index: {device_index}: {sr.Microphone.list_microphone_names
 def listen(mode='api'):
     with sr.Microphone(sample_rate=16000, device_index=args.device_index) as source:
         # Configure recognizer parameters
-        #r.energy_threshold = 300  # Lower threshold for detecting speech
-        r.pause_threshold = 1.0  # How much silence (in seconds) before considering the phrase complete
-        r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the phrase started
-        r.non_speaking_duration = 0.1  # How much silence to keep on both sides of the recording
+        # r.energy_threshold = 200  # Lower threshold for detecting speech
+        r.pause_threshold = 1  # How much silence (in seconds) before considering the phrase complete
+        r.phrase_threshold = 0.1 # Minimum seconds of speaking audio before we consider the phrase started
+        r.non_speaking_duration = 1  # How much silence to keep on both sides of the recording
         r.adjust_for_ambient_noise(source, duration=1)
 
         print("Listening...")
@@ -135,9 +154,6 @@ def listen(mode='api'):
             timeout=5,  # None means listen indefinitely until speech is detected
             phrase_time_limit=None,  # None means no limit to the phrase length
         )
-        # save the audio to a file
-        #with open("audio.wav", "wb") as f:
-        #    f.write(audio.get_wav_data())
         print("Processing...")
     if mode == 'api':
         try: 
@@ -169,15 +185,33 @@ def generate_response(prompt):
   message = completions.content
   return message
 
-def speak(text):
-    """simply streams the text to the speakers"""
-    print(f"{character.name} speaking: " + text)
-    try:
-        tts_player.say(text)
-    except Exception as e:
-        print(f"Error during speech synthesis: {e}")
+def parse_and_play_response(response, available_sounds):
+    print(f"Received LLM response: " + response)
+    sound_pattern = re.compile(r'\[([^\]]+)\]')
+    parts = sound_pattern.split(response)
+    
+    for i, part in enumerate(parts):
+        if i % 2 == 0:
+            try:
+                tts_player.say(part)
+            except Exception as e:
+                print(f"Error during speech synthesis: {e}")
+        else:
+            # Play the sound if it's in the available sounds
+            sound_name = part.strip()
+            if sound_name in available_sounds:
+                print(f"Playing sound: {sound_name}")
+                try:
+                    sound = AudioSegment.from_file(f"sounds/{sound_name}.mp3")
+                    play(sound)
+                except Exception as e:
+                    print(f"Error playing sound: {e}")
 
-speak(conversation_start)
+def simple_say(text):
+    print(f"{character.name} speaking: " + text)
+    tts_player.say(text)
+
+simple_say(conversation_start)
 # set up error counter
 error_counter = 0
 flag = True
@@ -192,13 +226,13 @@ while True:
   if prompt is not None:
     response = generate_response(prompt)
     flag = True
-    speak(response)
+    parse_and_play_response(response, available_sounds)
   else:
     flag = True
-    speak(didnt_understand)
+    simple_say(didnt_understand)
     error_counter += 1
     if error_counter > 3:
-      speak("I'm sorry, I'm having trouble understanding you in general. Please try again later.")
+      simple_say("I'm sorry, I'm having trouble understanding you in general. Please try again later.")
       exit(0)
 
 # Graceful shutdown? 
