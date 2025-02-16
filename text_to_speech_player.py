@@ -15,7 +15,7 @@ class TextToSpeechPlayer:
         elif backend == "elevenlabs":
             from elevenlabs import ElevenLabs
             _ = load_dotenv(find_dotenv())  # read local .env file
-            self.client = ElevenLabs(api_key=os.getenv("EELEVEN_LABS_API_KEY"))
+            self.client = ElevenLabs(api_key=os.getenv("ELEVEN_LABS_API_KEY"))
             self.sample_rate = 22050  # Assuming a default sample rate for ElevenLabs
         else:
             raise ValueError("Unsupported backend")
@@ -30,7 +30,7 @@ class TextToSpeechPlayer:
             audio_data = []
             for audio_chunk in self.client.text_to_speech.convert_as_stream(
                 text=text,
-                voice_id="JBFqnCBsd6RMkjVDRZzb",
+                voice_id="DKW5FZN23rhBOgbpiS1w",
                 model_id="eleven_multilingual_v2"
             ):
                 audio_data.append(np.frombuffer(audio_chunk, dtype=np.int16))
