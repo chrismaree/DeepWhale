@@ -20,10 +20,10 @@ _ = load_dotenv(find_dotenv()) # read local .env file
 defaults = {
     "api_key": os.getenv("OPENAI_API_KEY") ,
     "model": "gpt-4o",
-    "temperature": 0.7,
+    "temperature": 1.0,
     "voice": "com.apple.eloquence.en-US.Grandpa",
     "volume": 1.0,
-    "rate": 200,
+    "rate": 250,
     "session_id": "abc123",
     "base_url": "https://api.openai.com/v1",
 }
@@ -112,32 +112,42 @@ with_message_history = RunnableWithMessageHistory(
 
 # Set up the speech recognition engine
 r = sr.Recognizer()
-r.pause_threshold = 1.0  # Seconds of silence before considering the phrase complete
-r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the speaking as complete
-r.non_speaking_duration = 0.3  # Seconds of non-speaking audio to keep on both sides of the recording
-#print("Adjusting for ambient noise...")
-#r.adjust_for_ambient_noise(source, duration=0.5)
 
-def listen():
+def listen(mode='api'):
     with sr.Microphone(sample_rate=16000, device_index=2) as source:
+        # Configure recognizer parameters
+        r.pause_threshold = 1.0  # How much silence (in seconds) before considering the phrase complete
+        r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the phrase started
+        r.non_speaking_duration = 0.1  # How much silence to keep on both sides of the recording
+        
         print("Listening...")
-        try:
-            audio = r.listen(source)
+        audio = r.listen(
+            source,
+            timeout=5,  # None means listen indefinitely until speech is detected
+            phrase_time_limit=10,  # None means no limit to the phrase length
+        )
+    if mode == 'api':
+        try: 
             print("Processing...")
-            # Load model with specific options
-            model = whisper.load_model("base.en")
-            # Get raw PCM data (assuming 16-bit audio)
-            raw_data = audio.get_raw_data()
-            # Convert bytes to np.array of type int16, then to float32
-            audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
-            # Normalize to range [-1, 1]
-            audio_np /= 32768.0
-            result = model.transcribe(audio_np, language="en")
-            text = result["text"]
+            text = r.recognize_google(audio)
+            print("You: " + text)
             return text
         except Exception as e:
-            print("Error: " + str(e))
-            return None
+            print("Error: from google voice transcription: " + str(e))
+    elif mode == 'local':
+        print("Processing...")
+        model = whisper.load_model("base.en")
+        raw_data = audio.get_raw_data()
+        audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
+        audio_np /= 32768.0
+        try: 
+            result = model.transcribe(audio_np, language="en")
+            text = result["text"]
+            print("You: " + text)
+            return text
+        except Exception as e:
+            print("Error: from local whisper transcription: " + str(e))
+    return None
 
 def generate_response(prompt):
   completions = with_message_history.invoke(
@@ -149,7 +159,7 @@ def generate_response(prompt):
 
 def speak(text):
     """simply streams the text to the speakers"""
-    print(f"{character.name}: " + text)
+    print(f"{character.name} speaking: " + text)
     try:
         stream = sd.OutputStream(samplerate=voice.config.sample_rate, channels=1, dtype='int16')
         stream.start()
@@ -164,24 +174,28 @@ def speak(text):
         print(f"Error during speech synthesis: {e}")
 
 speak(conversation_start)
-
+# set up error counter
+error_counter = 0
 flag = True
+
+# start main loop
 while True:
   if ptt:
     input("Press Enter to start recording...")
   if flag:
-    print("Listening...")
     flag = False
-  prompt = listen()
+    prompt = listen(mode='api')
   if prompt is not None:
-    print("You: " + prompt)
     response = generate_response(prompt)
     flag = True
     speak(response)
-
   else:
     flag = True
     speak(didnt_understand)
+    error_counter += 1
+    if error_counter > 3:
+      speak("I'm sorry, I'm having trouble understanding you in general. Please try again later.")
+      exit(0)
 
 # Graceful shutdown? 
 def signal_handler(sig, frame):
