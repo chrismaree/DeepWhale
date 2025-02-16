@@ -123,16 +123,21 @@ print(f"Using device index: {device_index}: {sr.Microphone.list_microphone_names
 def listen(mode='api'):
     with sr.Microphone(sample_rate=16000, device_index=args.device_index) as source:
         # Configure recognizer parameters
-        r.pause_threshold = 1.2  # How much silence (in seconds) before considering the phrase complete
+        #r.energy_threshold = 300  # Lower threshold for detecting speech
+        r.pause_threshold = 1.0  # How much silence (in seconds) before considering the phrase complete
         r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the phrase started
-        r.non_speaking_duration = 0.3  # How much silence to keep on both sides of the recording
-        
+        r.non_speaking_duration = 0.1  # How much silence to keep on both sides of the recording
+        r.adjust_for_ambient_noise(source, duration=1)
+
         print("Listening...")
         audio = r.listen(
             source,
             timeout=5,  # None means listen indefinitely until speech is detected
             phrase_time_limit=None,  # None means no limit to the phrase length
         )
+        # save the audio to a file
+        #with open("audio.wav", "wb") as f:
+        #    f.write(audio.get_wav_data())
         print("Processing...")
     if mode == 'api':
         try: 
