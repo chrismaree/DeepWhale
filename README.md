@@ -7,6 +7,10 @@
   <img alt="PoopyLogo" src="./cover_image.png" width="440">
 </p>
 
+# Demo Audio
+[demo.webm](https://github.com/user-attachments/assets/a6667e93-df2d-48ff-a0cb-685af5f95036)
+
+
 ## Introduction
 This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or using remote services via paid for API. The end game is to create chatbot profiles to drive fun AI interactions. This could be deployed in a number of situations to create silly human <> AI interactions.
 
