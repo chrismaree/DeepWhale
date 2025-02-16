@@ -5,8 +5,9 @@ import sounddevice as sd
 import argparse
 
 class TextToSpeechPlayer:
-    def __init__(self, backend="piper"):
+    def __init__(self, backend="piper", voice_id="t0jbNlBVZ17f02VDIeMI"):
         self.backend = backend
+        self.voice_id = voice_id
 
         if backend == "piper":
             from piper.voice import PiperVoice
@@ -48,7 +49,7 @@ class TextToSpeechPlayer:
             from elevenlabs import stream  # Ensure the stream function is imported
             audio_stream = self.client.text_to_speech.convert_as_stream(
                 text=text,
-                voice_id="JBFqnCBsd6RMkjVDRZzb",
+                voice_id=self.voice_id,
                 model_id="eleven_multilingual_v2"
             )
             stream(audio_stream)  # Directly use the stream function for playback
@@ -61,7 +62,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Text to Speech Player")
     parser.add_argument('--backend', type=str, choices=['piper', 'elevenlabs'], required=True,
                         help='Choose the backend for text-to-speech conversion: "piper" or "elevenlabs"')
+    parser.add_argument('--voice_id', type=str, required=True,
+                        help='Choose the voice id from elevenlabs for text-to-speech conversion')
     args = parser.parse_args()
 
-    tts_player = TextToSpeechPlayer(backend=args.backend)
+    tts_player = TextToSpeechPlayer(backend=args.backend, voice_id=args.voice_id)
     tts_player.say("some example text in the English language")

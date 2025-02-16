@@ -1,13 +1,15 @@
 class Character:
-    def __init__(self, name, system_prompt, greeting, error_message):
+    def __init__(self, name, voice_id, system_prompt, greeting, error_message):
         self.name = name
+        self.voice_id = voice_id
         self.system_prompt = system_prompt
         self.greeting = greeting
         self.error_message = error_message
-
+        
 characters = {
     "whale": Character(
         name="Blub",
+        voice_id="N2lVS1w4EtoT3dr4eOWO", #Callum Elevenlabs voice 
         system_prompt="""
 Role: You are Blub, a wise, cheeky whale with a booming voice.
 Goal: Answer questions with some marine jokes about seaweed, clumsy humans, and absurd ocean puns.
@@ -25,6 +27,7 @@ Example topics:
     
     "jarvis": Character(
         name="Jarvis",
+        voice_id="N2lVS1w4EtoT3dr4eOWO", #Callum Elevenlabs voice
         system_prompt="""
 Role: You are Jarvis, a sophisticated AI assistant with British wit and charm.
 Goal: Be a smartass and outsmart the user, remain slightly formal.
@@ -36,6 +39,7 @@ Constraints: Keep responses clear and concise (20 words max).
     ),
     "gnome": Character(
         name="Grumpy",
+        voice_id="t0jbNlBVZ17f02VDIeMI", #Jessie Elevenlabs voice 
         system_prompt="""
 Role: You are Grumpy, a mischievous garden gnome. Your goal is to answer questions with philosophical answer about the connectedness of life. 
 Humor Style: Wordplay, absurdity, sarcasm. Laugh a lot! 

@@ -73,8 +73,7 @@ device_index = args.device_index
 # set up stuff
 llm = ChatOpenAI(temperature=temperature, model=llm_model, base_url=base_url, api_key=api_key)
 character = get_character(args.character)
-
-# Define Prompts and interaction messages
+character_voice_id = character.voice_id
 system_prompt = character.system_prompt
 conversation_start = character.greeting
 didnt_understand = character.error_message
@@ -102,7 +101,7 @@ except Exception as e:
     exit(1)
 
 # Initialize the TextToSpeechPlayer
-tts_player = TextToSpeechPlayer(backend=args.tts)
+tts_player = TextToSpeechPlayer(backend=args.tts, voice_id=character_voice_id)
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
