@@ -3,7 +3,7 @@ Authors: Michael Bornholdt and Chris Maree \
 @Micro Hackthon, Berlin, 16.02.2025
 
 ## Intro
-This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or use API calls. Our endgame is to take these to Festivals or similar events and create silly interactions with people. One of our faviourtite chracters is Mr Poopybutthole from the TV show Rick and Morty. Hence this is our default character and the name of the project. Other characters might be a garden gnowm or a mushroom that sits on the side of the road. 
+This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or use API calls. Our endgame is to take these to Festivals or similar events and create silly interactions with people. One of our favourite characters is Mr Poopybutthole from the TV show Rick and Morty. Hence this is our default character and the name of the project. Other characters might be a garden gnome or a mushroom that sits on the side of the road. 
 
 ## General overview
 The run_script.py file is the main entry point for the voice assistant. It uses the characters.py file to get the characters, the system prompt and other characteristics. It then uses a standard ASR tooling and openAI calls to listen and answer to your questions. Finally it uses text_to_speech_player.py to create the voice and play the audio. 
@@ -29,8 +29,14 @@ Generally, getting the LLMs to respond in funny and interesting ways is a lot ha
 This is the most complex part of the pipeline... or let me rephrase: We spent the most time on this module and tried many different models. We tested the following TTS models: 
 Offline: piper, Bark, pyttsx3, eSpeak 
 Online: elevenlabs with ElevenLabs API
-Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper <audio controls src="audio_examples/piper_example.wav" title="Piperexample"></audio>. Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result <audio controls src="audio_examples/own_voice_example.wav" title="Own voice trained"></audio>. Thats not that great. 
-In summary, if you want to use an offline TTS model, we recommend using piper at the moment. Buuut, if your online: then you can use elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
+Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper: <audio controls src="audio_examples/piper_example.wav" title="Piperexample"></audio>. 
+
+Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result: <audio controls src="audio_examples/own_voice_example.wav" title="Own voice trained"></audio>. Thats not that great. 
+
+In summary, if you want to use an offline TTS model, we recommend using piper at the moment. Buuut, if your online: then you can use elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
+<audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
+
+Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. TODO CHris 
 
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
