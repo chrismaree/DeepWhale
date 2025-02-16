@@ -20,3 +20,4 @@ setuptools==75.6.0
 sounddevice==0.5.1
 openai-whisper
 ffmpeg
+pydub

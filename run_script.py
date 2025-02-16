@@ -15,9 +15,9 @@ import signal
 import whisper
 from characters import get_character
 from text_to_speech_player import TextToSpeechPlayer
+import re
 from pydub import AudioSegment
 from pydub.playback import play
-import re
 
 _ = load_dotenv(find_dotenv()) # read local .env file
 

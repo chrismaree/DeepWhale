@@ -2,6 +2,8 @@
 Authors: Michael Bornholdt and Chris Maree \
 @Micro Hackthon, Berlin, 16.02.2025
 
+![Project Cover](cover_image.png)
+
 ## Intro
 This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or use API calls. Our endgame is to take these to Festivals or similar events and create silly interactions with people. One of our favourite characters is Mr Poopybutthole from the TV show Rick and Morty. Hence this is our default character and the name of the project. Other characters might be a garden gnome or a mushroom that sits on the side of the road. 
 
@@ -41,9 +43,7 @@ Now the second option in elevenlabs is to train a voice on their site. Which can
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
 
-
-the piper library to generate speech and chat with you. It can be used locally and eventually hosted on a raspberry pi. This way you can create a offline voice assistant. Our endgame is to take these to Festivals or similar events and create silly interactions with people. One of our faviourtite chracters is Mr Poopybutthole from the TV show Rick and Morty. Hence this is our default character. 
-
+![alt text](image.png)
 
 ## How to install
 
