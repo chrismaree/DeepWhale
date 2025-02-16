@@ -41,6 +41,7 @@ Of the offline models, we found that piper was the best in speed and at creating
 [piper_example.webm](https://github.com/user-attachments/assets/ace6ddf8-0c3e-46ff-95c9-dbb4e2761228)
 
 Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result. Thats not that great. 
+
 [own.webm](https://github.com/user-attachments/assets/4b6e5782-a2e8-47a6-8dd8-d9c2d904503d)
 
 
