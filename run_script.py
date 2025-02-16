@@ -44,6 +44,7 @@ parser.add_argument("--rate", type=int, help="The rate at which the words are sp
 parser.add_argument("--session_id", type=str, help="The session ID to use for the chat history", default=defaults["session_id"])
 parser.add_argument("--base_url", type=str, help="The base URL to use for the OpenAI API", default=defaults["base_url"])
 parser.add_argument("--tts", type=str, help="The text-to-speech backend to use", default=defaults["tts"])
+parser.add_argument("--device_index", type=int, help="The device index to use for the microphone", default=0)
 
 args = parser.parse_args()
 
@@ -67,12 +68,12 @@ rate = min(max(args.rate, 20), 500)
 session_id = args.session_id
 base_url = args.base_url
 ptt = args.ptt
+device_index = args.device_index
 
 # set up stuff
 llm = ChatOpenAI(temperature=temperature, model=llm_model, base_url=base_url, api_key=api_key)
 character = get_character(args.character)
-
-# Define Prompts and interaction messages
+character_voice_id = character.voice_id
 system_prompt = character.system_prompt
 conversation_start = character.greeting
 didnt_understand = character.error_message
@@ -100,7 +101,7 @@ except Exception as e:
     exit(1)
 
 # Initialize the TextToSpeechPlayer
-tts_player = TextToSpeechPlayer(backend=args.tts)
+tts_player = TextToSpeechPlayer(backend=args.tts, voice_id=character_voice_id)
 
 def get_session_history(session_id: str) -> BaseChatMessageHistory:
     if session_id not in store:
@@ -117,23 +118,24 @@ with_message_history = RunnableWithMessageHistory(
 
 # Set up the speech recognition engine
 r = sr.Recognizer()
+print(f"Using device index: {device_index}: {sr.Microphone.list_microphone_names()[device_index]}" )
 
 def listen(mode='api'):
-    with sr.Microphone(sample_rate=16000, device_index=0) as source:
+    with sr.Microphone(sample_rate=16000, device_index=args.device_index) as source:
         # Configure recognizer parameters
-        r.pause_threshold = 1.0  # How much silence (in seconds) before considering the phrase complete
+        r.pause_threshold = 1.2  # How much silence (in seconds) before considering the phrase complete
         r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the phrase started
-        r.non_speaking_duration = 0.1  # How much silence to keep on both sides of the recording
+        r.non_speaking_duration = 0.3  # How much silence to keep on both sides of the recording
         
         print("Listening...")
         audio = r.listen(
             source,
             timeout=5,  # None means listen indefinitely until speech is detected
-            phrase_time_limit=10,  # None means no limit to the phrase length
+            phrase_time_limit=None,  # None means no limit to the phrase length
         )
+        print("Processing...")
     if mode == 'api':
         try: 
-            print("Processing...")
             text = r.recognize_google(audio)
             print("You: " + text)
             return text
