@@ -1,5 +1,5 @@
 # Mr Poopybutthole 
-Authors: Michael Bornholdt and Chris Maree \
+**Authors:** Michael Bornholdt and Chris Maree \
 @Micro Hackthon, Berlin, 16.02.2025
 
 ## Intro
