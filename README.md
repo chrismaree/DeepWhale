@@ -36,14 +36,23 @@ Generally, getting the LLMs to respond in funny and interesting ways is a lot ha
 This is the most complex part of the pipeline... or let me rephrase: We spent the most time on this module and tried many different models. We tested the following TTS models: 
 Offline: piper, Bark, pyttsx3, eSpeak 
 Online: elevenlabs with ElevenLabs API
-Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper: <audio controls src="audio_examples/piper_example.wav" title="Piperexample"></audio>. 
+Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper:
 
-Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result: <audio controls src="audio_examples/own_voice_example.m4a" title="Ownvoice"></audio>. Thats not that great. 
+[piper_example.webm](https://github.com/user-attachments/assets/ace6ddf8-0c3e-46ff-95c9-dbb4e2761228)
 
-In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
-<audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
 
-Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_41_19_Mr Poopy Buthole_ivc_s50_sb100_se100_b_m2.mp3" title="Pr Poopybutthole"></audio>
+Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result. Thats not that great. 
+
+[own_voice_example.webm](https://github.com/user-attachments/assets/d88175b6-bb3a-45cd-b146-9efd489cc2d2)
+
+
+In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: 
+
+[gnome.webm](https://github.com/user-attachments/assets/4fb14dde-3058-4a7c-827e-5e9b32b005fb)
+
+Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below:
+
+[mrpoopy.webm](https://github.com/user-attachments/assets/6bf3f727-67be-4901-9c85-bbf2c4b230eb)
 
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
