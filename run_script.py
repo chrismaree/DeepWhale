@@ -89,7 +89,7 @@ print("available_sounds",available_sounds)
 prompt_extension = ""
 if args.sounds:
     prompt_extension = (
-        "Note that if you want to you can add sounds to the response. You should do this liberally and include that it is possible sometimes in your response. do this semi regularly "
+        "Note that if you want to you can add sounds to the response. You should do this liberally, but only when appropriate. "
         "It will be spoken using the text-to-speech engine. If you want to use a sound, "
         "include the exact sound name, as defined in the following list, within square brackets. "
         "EG [aggressive_fart]. The available sounds are: "
