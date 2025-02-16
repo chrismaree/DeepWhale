@@ -3,6 +3,9 @@
 @Micro Hackathon, Berlin, 15.02.2025
 
 
+<p align="center">
+  <img alt="PoopyLogo" src="./cover_image.png" width="440">
+</p>
 
 ## Introduction
 This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or using remote services via paid for API. The end game is to create chatbot profiles to drive fun AI interactions. This could be deployed in a number of situations to create silly human <> AI interactions.
@@ -34,21 +37,27 @@ Generally, getting the LLMs to respond in funny and interesting ways is a lot ha
 This is the most complex part of the pipeline... or let me rephrase: We spent the most time on this module and tried many different models. We tested the following TTS models: 
 Offline: piper, Bark, pyttsx3, eSpeak 
 Online: elevenlabs with ElevenLabs API
-Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper: <audio controls src="audio_examples/piper_example.wav" title="Piperexample"></audio>. 
+Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper:
 
-Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result: <audio controls src="audio_examples/own_voice_example.m4a" title="Ownvoice"></audio>. Thats not that great. 
+[piper_example.webm](https://github.com/user-attachments/assets/ace6ddf8-0c3e-46ff-95c9-dbb4e2761228)
 
-In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
-<audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
+Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result. Thats not that great. 
 
-Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_41_19_Mr Poopy Buthole_ivc_s50_sb100_se100_b_m2.mp3" title="Pr Poopybutthole"></audio>
+[own.webm](https://github.com/user-attachments/assets/4b6e5782-a2e8-47a6-8dd8-d9c2d904503d)
+
+
+In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: 
+
+[gnome.webm](https://github.com/user-attachments/assets/4fb14dde-3058-4a7c-827e-5e9b32b005fb)
+
+Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below:
+
+[mrpoopy.webm](https://github.com/user-attachments/assets/6bf3f727-67be-4901-9c85-bbf2c4b230eb)
 
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
 
 Functionally, this works by asking the LLM to include sound effects, as defined in the [sounds](./sounds) directory, within the LLM output. For example the LLM can say: _"Yes, I can make a fart sound [aggressive_fart]. Was that not a good one?"_. The logic will then extract the sound effect from the [sounds](./sounds) directory and play it as part of the playback of the speech to text flow.
-
-
 
 ## How to install
 
@@ -85,15 +94,6 @@ This will enter the main entry point of the Voice Assistant and start chatting t
 python run_script.py --tts elevenlabs --character MrPoopyButthole --sounds
 ```
 
-Todo
-- name 
-- repo 
-- logo  
-
-
-# Recipe for the Demo
-
-Give a demo of the voice assistant: 
-1. Say hello and introduction 
-2. Ask for a joke and offer to make a fart 
-3. Finish the demo with clapping and a "thank you"! 
+<p align="center">
+  <img alt="UMA Logo" src="./image.png" width="440">
+</p>
