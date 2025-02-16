@@ -40,11 +40,8 @@ Of the offline models, we found that piper was the best in speed and at creating
 
 [piper_example.webm](https://github.com/user-attachments/assets/ace6ddf8-0c3e-46ff-95c9-dbb4e2761228)
 
-
 Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result. Thats not that great. 
-
 [own_voice_example.webm](https://github.com/user-attachments/assets/d88175b6-bb3a-45cd-b146-9efd489cc2d2)
-
 
 In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: 
 
@@ -58,8 +55,6 @@ Now the second option in elevenlabs is to train a voice on their site. Which can
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
 
 Functionally, this works by asking the LLM to include sound effects, as defined in the [sounds](./sounds) directory, within the LLM output. For example the LLM can say: _"Yes, I can make a fart sound [aggressive_fart]. Was that not a good one?"_. The logic will then extract the sound effect from the [sounds](./sounds) directory and play it as part of the playback of the speech to text flow.
-
-
 
 ## How to install
 
@@ -95,19 +90,6 @@ This will enter the main entry point of the Voice Assistant and start chatting t
 ```
 python run_script.py --tts elevenlabs --character MrPoopyButthole --sounds
 ```
-
-Todo
-- name 
-- repo 
-- logo  
-
-
-# Recipe for the Demo
-
-Give a demo of the voice assistant: 
-1. Say hello and introduction 
-2. Ask for a joke and offer to make a fart 
-3. Finish the demo with clapping and a "thank you"!
 
 <p align="center">
   <img alt="UMA Logo" src="./image.png" width="440">
