@@ -9,7 +9,6 @@ import speech_recognition as sr
 import os
 from dotenv import load_dotenv, find_dotenv
 from piper.voice import PiperVoice
-import sounddevice as sd
 import numpy as np
 import signal
 import whisper
