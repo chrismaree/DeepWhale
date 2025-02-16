@@ -12,9 +12,15 @@ python3.11 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-### How to test piper 
+
+If you get an error relating to satisfying `piper-phonemize~=1.1.0` requirements then you might need to run:
 ```
-python test_run_piper.py
+pip install piper-tts sounddevice --no-deps piper-phonemize-cross onnxruntime numpy
+```
+### How to test piper 
+To test the TTS functionality, run the following script with either `--backend piper` or `--backend elevenlabs` depending on which backend you want to use (elevenlabs will require a valid elevenlabs api key in the .env file).
+```
+python text_to_speech_player.py.py
 ```
 it should then play the audio directly to your speakers.
 
