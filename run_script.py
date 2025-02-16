@@ -12,6 +12,7 @@ from piper.voice import PiperVoice
 import sounddevice as sd
 import numpy as np
 import signal
+import whisper
 from characters import get_character
 
 _ = load_dotenv(find_dotenv()) # read local .env file
@@ -111,17 +112,32 @@ with_message_history = RunnableWithMessageHistory(
 
 # Set up the speech recognition engine
 r = sr.Recognizer()
+r.pause_threshold = 1.0  # Seconds of silence before considering the phrase complete
+r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the speaking as complete
+r.non_speaking_duration = 0.3  # Seconds of non-speaking audio to keep on both sides of the recording
+#print("Adjusting for ambient noise...")
+#r.adjust_for_ambient_noise(source, duration=0.5)
 
 def listen():
-  with sr.Microphone() as source:
-    audio = r.listen(source, phrase_time_limit=5)
-    print("Processing...")
-  try:
-    text = r.recognize_google(audio)
-    return text
-  except Exception as e:
-    print("Error: " + str(e))
-    return None
+    with sr.Microphone(sample_rate=16000, device_index=2) as source:
+        print("Listening...")
+        try:
+            audio = r.listen(source)
+            print("Processing...")
+            # Load model with specific options
+            model = whisper.load_model("base.en")
+            # Get raw PCM data (assuming 16-bit audio)
+            raw_data = audio.get_raw_data()
+            # Convert bytes to np.array of type int16, then to float32
+            audio_np = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32)
+            # Normalize to range [-1, 1]
+            audio_np /= 32768.0
+            result = model.transcribe(audio_np, language="en")
+            text = result["text"]
+            return text
+        except Exception as e:
+            print("Error: " + str(e))
+            return None
 
 def generate_response(prompt):
   completions = with_message_history.invoke(

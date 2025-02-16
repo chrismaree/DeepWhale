@@ -18,3 +18,5 @@ piper-tts==1.2.0
 pycparser==2.22
 setuptools==75.6.0
 sounddevice==0.5.1
+openai-whisper
+ffmpeg
