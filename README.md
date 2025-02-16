@@ -43,7 +43,7 @@ Bark has some advanced features, where you can tell it to bark or laugh but thes
 In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
 <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
 
-Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_41_19_Mr Poopy Buthole_ivc_s50_sb100_se100_b_m2.mp3" title="Pr Poopybutthole"></audio>
+Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_41_19_Mr Poopy Buthole_ivc_s50_sb100_se100_b_m2.mp3" title="Pr Poopybutthole"></audio>
 
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
@@ -86,19 +86,6 @@ This will enter the main entry point of the Voice Assistant and start chatting t
 ```
 python run_script.py --tts elevenlabs --character MrPoopyButthole --sounds
 ```
-
-Todo
-- name 
-- repo 
-- logo  
-
-
-# Recipe for the Demo
-
-Give a demo of the voice assistant: 
-1. Say hello and introduction 
-2. Ask for a joke and offer to make a fart 
-3. Finish the demo with clapping and a "thank you"!
 
 <p align="center">
   <img alt="UMA Logo" src="./image.png" width="440">
