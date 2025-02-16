@@ -1,27 +1,32 @@
-# Mr Poopybutthole 
-Authors: Michael Bornholdt and Chris Maree \
-@Micro Hackthon, Berlin, 16.02.2025
+# Mr Poopybutthole AI Unassistor
+**Authors:** [Michael Bornholdt](https://github.com/michaelbornholdt) and [Chris Maree](https://github.com/chrismaree) \
+@Micro Hackathon, Berlin, 15.02.2025
 
-![Project Cover](cover_image.png)
+<p align="center">
+  <img alt="UMA Logo" src="./cover_image.png" width="440">
+</p>
 
-## Intro
-This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or use API calls. Our endgame is to take these to Festivals or similar events and create silly interactions with people. One of our favourite characters is Mr Poopybutthole from the TV show Rick and Morty. Hence this is our default character and the name of the project. Other characters might be a garden gnome or a mushroom that sits on the side of the road. 
+## Introduction
+This project is a simple voice assistant (think Alexa) that uses speech recognition (ASR), LLM responses and Text to Speech (TTS). Our code allows you to run this locally or using remote services via paid for API. The end game is to create chatbot profiles to drive fun AI interactions. This could be deployed in a number of situations to create silly human <> AI interactions.
+
+One of our favorite characters is Mr Poopy Butthole from the TV show Rick and Morty. Hence this is our default character and the name of the project. Other characters might be a garden gnome or a mushroom that sits on the side of the road (all programmed, see [characters.py](./characters.py)).
 
 ## General overview
-The run_script.py file is the main entry point for the voice assistant. It uses the characters.py file to get the characters, the system prompt and other characteristics. It then uses a standard ASR tooling and openAI calls to listen and answer to your questions. Finally it uses text_to_speech_player.py to create the voice and play the audio. 
+The `run_script.py` file is the main entry point for the voice assistant. It uses the `characters.py` file to get the characters, the system prompt and other characteristics. It then uses a standard ASR tooling and openAI calls to listen and answer to your questions. Finally it uses `text_to_speech_player.py` to create the voice and play the audio, including extra noises, farts, claps or anything extra like this. 
  
-*---*
-
 # What and how we built it 
 ## ASR: Automated Speech Recognition 
-We use a wraper function that can call different ASR libraries. Currently we use the free Google ASR API and or openai whisper for offline use. The tiny whisper model often fails to understand compelex sentences, so base or larger needs to be used. After testing a few, we can say that - generally the ASR components are reliable enough to use, even in a noisy environment. However the listening functions are nontrivial and need further improvements. The current solution sometimes cuts of the end of the sentence of the speaking and hence only allows parts of the user to be transcribed. This aspect will need to be finetuned to the specific environment at a festival or elsewhere. 
-To fix this, we have implmenented an advanced listening mode: ...
+We use a wraper function that can call different ASR libraries. Currently we use the free Google ASR API and or openai whisper for offline use. The tiny whisper model often fails to understand complex sentences, so base or larger needs to be used. After testing a few, we can say that - generally the ASR components are reliable enough to use, even in a noisy environment.
+
+However the listening functions are nontrivial and need further improvements. The current solution sometimes cuts of the end of the sentence of the speaking and hence only allows parts of the user to be transcribed. This aspect will need to be fine tuned to the specific environment at a festival or elsewhere. 
 
 ## Charater Conversations
-We use langchain for simple LLM calls and can call openai or a locally running LLMs. We currently defaulted to GPT4o since the differences in quality is not noticable between the well known providers. Note: GPT-3.5 was noticable worse at following the bevahior instructions for the characters. We did only limited testing on local LLMs since choosing a model is mostly a function of the availble hardware (when using a raspberry pi in offline setting) and can be solved with enough time spent on prompt engineering. 
+We use langchain for simple LLM calls and can call openai or a locally running LLMs. We currently defaulted to `GPT4o` since the differences in quality is not noticeable between the well known providers. Note: `GPT-3.5` was noticeable worse at following the behavior instructions for the characters.
+
+We did only limited testing on local LLMs since choosing a model is mostly a function of the available hardware (when using a raspberry pi in offline setting) and can be solved with enough time spent on prompt engineering. Local Lama 3 was tested but it proved to not be the best conversation partner.
 
 ### Limitations
-Generally, getting the LLMs to respond in funny and interesting ways is a lot harder than initially expected. The best current solution is to give general instructions such as: "be humerous and relate to the forest setting" and then give instructions on how to guide the conversation. Giving conversation starters also helps the humans to know how to interact with the voice agent and not ask outragous questions. Humour is kinda impossible to get right and most jokes are nonsensical. Here is what works the best atm: 
+Generally, getting the LLMs to respond in funny and interesting ways is a lot harder than initially expected. The best current solution is to give general instructions such as: "be humerous and relate to the forest setting" and then give instructions on how to guide the conversation. Giving conversation starters also helps the humans to know how to interact with the voice agent and not ask outragous questions. Humour is kinda impossible to get right and most jokes are nonsensical. Here is what works the best from our experience and is used when defining the characters: 
 - Give general guidelines and context such as give short answers and you are a forest gnome
 - Give instructions on how to start conversation such as: "Hello! My name is Mr Poopybutthole. How can I help you today?"
 - Give it instructions on how to steer the conversation, e.g.: "Ask the user their name and how they are enjoying the festival"
@@ -33,17 +38,19 @@ Offline: piper, Bark, pyttsx3, eSpeak
 Online: elevenlabs with ElevenLabs API
 Of the offline models, we found that piper was the best in speed and at creating somewhat human sounding voices. Here is a audio clip of piper: <audio controls src="audio_examples/piper_example.wav" title="Piperexample"></audio>. 
 
-Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result: <audio controls src="audio_examples/own_voice_example.wav" title="Own voice trained"></audio>. Thats not that great. 
+Bark has some advanced features, where you can tell it to bark or laugh but these dont really work. Bark also allow you to train a model on audio input. We tried this with our own voice and here is the result: <audio controls src="audio_examples/own_voice_example.m4a" title="Ownvoice"></audio>. Thats not that great. 
 
-In summary, if you want to use an offline TTS model, we recommend using piper at the moment. Buuut, if your online: then you can use elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
+In summary, if you want to use an offline TTS model, we recommend using piper at the moment. But, if your online: then you can use Elevenlabs - which is an amazing product (compared to the offline models). First of all, you can create or use voices on their website. For example, I created this voice for a little gnome just by prompting what I want: \
 <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_02_30_Gnome Creature_gen_s35_sb74_se46_b_m2-1.mp3" title="prompted gnome voice"></audio>
 
-Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. TODO CHris 
+Now the second option in elevenlabs is to train a voice on their site. Which can be done with a few clips of - in this case Mr. Poopybutthole. The results are amazing. See the audio clip below: <audio controls src="audio_examples/ElevenLabs_2025-02-16T14_41_19_Mr Poopy Buthole_ivc_s50_sb100_se100_b_m2.mp3" title="Pr Poopybutthole"></audio>
 
 ## Calling Sounds
 Since it is impossible for current TTS models to create realistic sound effects on the fly (even for Elevenlabs), we use a simple sound library to call sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. This is a simple wrapper function that can call different sound libraries. Currently we use the playsound library to play sounds. 
 
-![alt text](image.png)
+Functionally, this works by asking the LLM to include sound effects, as defined in the [sounds](./sounds) directory, within the LLM output. For example the LLM can say: _"Yes, I can make a fart sound [aggressive_fart]. Was that not a good one?"_. The logic will then extract the sound effect from the [sounds](./sounds) directory and play it as part of the playback of the speech to text flow.
+
+
 
 ## How to install
 
@@ -61,7 +68,8 @@ pip install piper-tts sounddevice --no-deps piper-phonemize-cross onnxruntime nu
 ### How to test piper 
 To test the TTS functionality, run the following script with either `--backend piper` or `--backend elevenlabs` depending on which backend you want to use (elevenlabs will require a valid elevenlabs api key in the .env file).
 ```
-python text_to_speech_player.py.py
+python text_to_speech_player.py --backend piper
+python text_to_speech_player.py --backend piper
 ```
 it should then play the audio directly to your speakers.
 
@@ -74,8 +82,9 @@ echo 'Welcome to the world of speech synthesis!' | piper --model en_US-lessac-me
 ```
 
 ### How to run the script
+This will enter the main entry point of the Voice Assistant and start chatting to you.
 ```
-python run_script.py --character "gnome"
+python run_script.py --tts elevenlabs --character MrPoopyButthole --sounds
 ```
 
 Todo
@@ -89,4 +98,8 @@ Todo
 Give a demo of the voice assistant: 
 1. Say hello and introduction 
 2. Ask for a joke and offer to make a fart 
-3. Finish the demo with clapping and a "thank you"! 
+3. Finish the demo with clapping and a "thank you"!
+
+<p align="center">
+  <img alt="UMA Logo" src="./image.png" width="440">
+</p>
