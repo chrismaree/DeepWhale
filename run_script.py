@@ -17,6 +17,7 @@ from characters import get_character
 from text_to_speech_player import TextToSpeechPlayer
 from pydub import AudioSegment
 from pydub.playback import play
+import re
 
 _ = load_dotenv(find_dotenv()) # read local .env file
 
@@ -89,13 +90,12 @@ print("available_sounds",available_sounds)
 prompt_extension = ""
 if args.sounds:
     prompt_extension = (
-        "Note that if you want to you can add sounds to the response. "
+        "Note that if you want to you can add sounds to the response. You should do this liberally and include that it is possible sometimes in your response. do this semi regularly "
         "It will be spoken using the text-to-speech engine. If you want to use a sound, "
         "include the exact sound name, as defined in the following list, within square brackets. "
         "EG [aggressive_fart]. The available sounds are: "
         "[" + " ".join(available_sounds) + "]"
     )
-    print(prompt_extension)
 
 prompt = ChatPromptTemplate.from_messages(
     [
@@ -143,9 +143,9 @@ def listen(mode='api'):
     with sr.Microphone(sample_rate=16000, device_index=args.device_index) as source:
         # Configure recognizer parameters
         # r.energy_threshold = 200  # Lower threshold for detecting speech
-        r.pause_threshold = 1.2  # How much silence (in seconds) before considering the phrase complete
-        r.phrase_threshold = 0.3  # Minimum seconds of speaking audio before we consider the phrase started
-        r.non_speaking_duration = 0.3  # How much silence to keep on both sides of the recording
+        r.pause_threshold = 1  # How much silence (in seconds) before considering the phrase complete
+        r.phrase_threshold = 0.1 # Minimum seconds of speaking audio before we consider the phrase started
+        r.non_speaking_duration = 1  # How much silence to keep on both sides of the recording
         r.adjust_for_ambient_noise(source, duration=1)
 
         print("Listening...")
@@ -186,14 +186,12 @@ def generate_response(prompt):
   return message
 
 def parse_and_play_response(response, available_sounds):
-    import re
+    print(f"Received LLM response: " + response)
     sound_pattern = re.compile(r'\[([^\]]+)\]')
     parts = sound_pattern.split(response)
     
     for i, part in enumerate(parts):
         if i % 2 == 0:
-            # Speak the text part
-            print(f"{character.name} speaking: " + part)
             try:
                 tts_player.say(part)
             except Exception as e:
@@ -225,8 +223,6 @@ while True:
   if flag:
     flag = False
     prompt = listen(mode='api')
-    # prompt = "Can you fart?"
-    # simple_say(prompt)
   if prompt is not None:
     response = generate_response(prompt)
     flag = True
