@@ -116,19 +116,19 @@ r = sr.Recognizer()
 def listen(mode='api'):
     with sr.Microphone(sample_rate=16000, device_index=2) as source:
         # Configure recognizer parameters
-        r.pause_threshold = 1.0  # How much silence (in seconds) before considering the phrase complete
+        r.pause_threshold = 2.0  # How much silence (in seconds) before considering the phrase complete
         r.phrase_threshold = 0.5  # Minimum seconds of speaking audio before we consider the phrase started
-        r.non_speaking_duration = 0.1  # How much silence to keep on both sides of the recording
+        r.non_speaking_duration = 0.3  # How much silence to keep on both sides of the recording
         
         print("Listening...")
         audio = r.listen(
             source,
             timeout=5,  # None means listen indefinitely until speech is detected
-            phrase_time_limit=10,  # None means no limit to the phrase length
+            phrase_time_limit=None,  # None means no limit to the phrase length
         )
+        print("Processing...")
     if mode == 'api':
         try: 
-            print("Processing...")
             text = r.recognize_google(audio)
             print("You: " + text)
             return text
